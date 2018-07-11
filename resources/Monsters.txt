@@ -1,0 +1,12 @@
+Name, W, R, M, XP, Weapon, Armor
+Giant Rat, 2, 2, 0, 10, Unarmed, None
+Bear, 4, 1, 0, 30, Unarmed, None
+Dragon, 20, 20, 20, 500, Unarmed, None
+Bat, 1, 2, 2, 20, Unarmed, None
+Sky eel, 2, 4, 0, 35, Unarmed, None
+Neighbour's cat, 1, 6, 3, 70, Unarmed, None
+Bandit, 5, 3, 2, 80, Sword, Leather armor
+Cutthroat, 3, 5, 2, 80, Sword, Leather armor
+Giant Beetle, 4, 4, 0, 50, Unarmed, None
+Zombie, 6, 0, 0, 35, Unarmed, None
+Goblin, 4, 6, 1, 80, Dragon Rifle, Lamellar armor

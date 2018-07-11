@@ -1,0 +1,13 @@
+Weapon, Skill, Damage, Cost
+Unarmed, Unarmed, 1d6/2, 7
+Axe, Axes, 1d6, 5
+Bow, Bows, 1d6, 5
+Dagger, Daggers, 1d6-2, 2
+Mace, Blunt, 1d6, 5
+Spear, Polearms, 1d6, 3
+Staff, Blunt, 1d6, 2
+Sword, Swords, 1d6, 5
+WarHammer, Blunt, 1d6, 5
+Dragon Pistol, FireArms, 1d6+4, 30
+Dragon Rifle, FireArms, 2d6, 50
+CrossBow, Bows, 1d6+2, 15
