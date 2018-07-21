@@ -1,5 +1,5 @@
 package battlefight
 
-abstract class Item(name: String, val cost: Int) {
+abstract class Item(val name: String, val cost: Int) {
   def description: String;
 }

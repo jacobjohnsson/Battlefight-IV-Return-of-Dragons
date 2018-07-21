@@ -4,7 +4,8 @@ class Stats(val w: Attribute, val r: Attribute, val m: Attribute,
             var maxHP: Int, var maxMana: Int, var defense: Int) {
   var currentHP = maxHP
   var currentMana = maxMana
-  
+  var damageReduction: Int = 0
+
   def mainAttr: Int = {
     Vector(w.value, r.value, m.value).max
   }
@@ -13,7 +14,7 @@ class Stats(val w: Attribute, val r: Attribute, val m: Attribute,
     attr match {
       case "w" => w.addBonus(bonus); currentHP += bonus
       case "r" => r.addBonus(bonus)
-      case "m" => m.addBonus(bonus); currentMana += bonus 
+      case "m" => m.addBonus(bonus); currentMana += bonus
     }
   }
 
@@ -26,6 +27,7 @@ class Stats(val w: Attribute, val r: Attribute, val m: Attribute,
         if (maxMana < 0) currentMana = 0
       }
       case "defense" => defense += bonus
+      case "dr" => damageReduction += bonus
     }
   }
 
@@ -37,7 +39,20 @@ class Stats(val w: Attribute, val r: Attribute, val m: Attribute,
       else m.value * 2
     }
   }
-  
+
+  def takeDamage(damage: Int): Int = {
+    var totalDamage = 0
+    if (damage > damageReduction) {
+      totalDamage = damage - damageReduction 
+    } else if (damage < 0) {
+      totalDamage = damage
+    }
+    currentHP -= totalDamage
+    
+    if (currentHP > maxHP) currentHP = maxHP
+    totalDamage
+  }
+
   def reset: Unit = {
     currentHP = maxHP
     currentMana = maxMana

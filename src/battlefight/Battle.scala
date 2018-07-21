@@ -1,47 +1,56 @@
 package battlefight
+import scala.collection.mutable.ListBuffer
+import scala.util.{Try,Success,Failure}
 
 class Battle(player: Hero, monster: Monster) {
   var fighting: Boolean = true
 
   def run: Unit = {
-    println(player.name + "! You've encountered a " + monster.name + ". Fight!\n")
+    println("You've encountered a " + monster.name + ". Fight!\n")
 
-    while(fighting) {
-      if (!player.isDead && !monster.isDead) {
+    round
 
-        var hasActed = false
-        while(!hasActed) {
-        
-          displayStatus
-  
-          println("Your options are: \n\n" +
-          "\t[1] Attack " +
-          "\t\t[2] View Hero \n" +
-          "\t[3] View Monster " + 
-          "\t[4] Run")
-          
-  
-          scala.io.StdIn.readLine() match {
-            case "1" => playerAttack; hasActed = true
-            case "2" => Character.view(player)
-            case "3" => Character.view(monster)
-            case "4" => playerRun; fighting = false; hasActed = true
-            case _ => println("Please choose one of the options next time.")
-          }
-        }
-
-        if (monster.currentHP == 1 && fighting == true) {
-          println(monster.name + " ran away!")
-          fighting = false
-        } else if (fighting == true){
-          monsterAttack
-        }
-      } else {
-        fighting = false
-      }
-      
+    def round: Unit = {
       monster.proc
       player.proc
+      
+      playerAct
+      
+      if (monster.isDead) {
+        fighting = false
+        won
+      }
+      
+      monster.act match {
+        case "flee" => println(monster.name + " fled!"); fighting = false
+        case "attack" => monsterAttack
+        case "spell" => monster.castSpell(monster.spellBook(0), player)
+      }
+
+      if (fighting) round
+    }
+    
+    def playerAct: Unit = {
+      var hasActed = false
+      
+      displayStatus
+
+      println("Your options are: \n\n" +
+      "\t[1] Attack " +
+      "\t\t[4] View Hero \n" +
+      "\t[2] Cast Spell " +
+      "\t\t[5] View Monster \n" +
+      "\t[3] Run")
+
+
+      scala.io.StdIn.readLine() match {
+        case "1" => playerAttack
+        case "2" => if (!castSpell) playerAct
+        case "3" => playerRun; fighting = false
+        case "4" => Character.view(player); playerAct 
+        case "5" => Character.view(monster); playerAct
+        case _ => println("Please choose one of the options next time."); playerAct
+      }
     }
   }
 
@@ -49,18 +58,56 @@ class Battle(player: Hero, monster: Monster) {
     val hit = player.mainRoll
     val damage = player.attackValue
 
-    monster.hit(hit, damage)
+    monster.hitWithWeapon(hit, damage)
+  }
 
-    if (monster.isDead) {
-      won
+  def castSpell: Boolean = {
+
+    def chooseSpell: Spell = {
+      var index = 0
+      
+      def choose: Unit = {
+        println("Choose: ")
+        val userInput = scala.io.StdIn.readLine()
+        Try(index = userInput.toInt) match { 
+          case Failure(f) => println(f); choose
+          case _ => 
+        }
+      }
+      
+      choose
+      player.spellBook(index)
     }
+
+    var result: Boolean = false
+
+    println("\t    Name\t\tMana")
+    player.spellBook.indices.foreach(i => println(
+          "\t[" + i + "] " + player.spellBook(i).name +
+          " \t\t" + player.spellBook(i).manaCost))
+
+    val spell: Spell = chooseSpell
+    val target: Character = if (spell.beneficial) player else monster
+
+    if (player.currentMana >= spell.manaCost) {
+      if (player.castSpell(spell, target)){
+        println("You casted a " + spell.name)
+        result = true
+      }
+      else {
+        println("You failed to cast a " + spell.name)
+        result = true
+      }
+    } else
+      println("You dont have enough mana to cast that spell.")
+
+    result
   }
 
   def won: Unit = {
     loot
-    if (player.levelUpable) player.levelUp
     println("You've defeated your enemy!\n" +
-          "You've gained " + monster.xpValue + " XP!")
+          "You've gained " + monster.xpValue + " XP!\n")
     player.giveXP(monster.xpValue)
     fighting = false;
   }
@@ -72,30 +119,53 @@ class Battle(player: Hero, monster: Monster) {
   def monsterAttack: Unit = {
     val hit = monster.mainRoll
     val damage = monster.attackValue
+    player.hitWithWeapon(hit, damage)
+  }
 
-    player.hit(hit, damage)
-  }
-  
   def loot: Unit = {
-    println("The " + monster.name + " dropped " + monster.loot.gold + " gold pieces and " + 
-      monster.loot.get + ". Pick it up?\n" +
-      "\t[1] Yes\n" +
-      "\t[2] No")
-  
-    val userInput = scala.io.StdIn.readLine()
-    userInput match {
-      case "1" => {
-        player.equipWeapon(monster.loot.get)
-        println("You picked up and equipped " + monster.loot.get)
-      }
-      case "2" => println("You discarded the " + monster.loot.get)
-      case _ => println("Not an option")
+
+    val lootItem: Option[Item] = {
+      var list: ListBuffer[Item] = ListBuffer()
+      if (monster.weapon.name.trim != "Unarmed") list = list :+ monster.weapon
+      if (monster.armor.get.name.trim != "None") list = list :+ monster.armor.get
+      if (!monster.inventory.isEmpty) list = list :+ monster.inventory(scala.util.Random.nextInt(monster.inventory.length))
+
+      if (list.size == 0) None
+      else Some(list(scala.util.Random.nextInt(list.length)))
     }
-    
-    player.addGold(monster.loot.gold)
-  }
+
+    val lootGold: Int = scala.util.Random.nextInt(monster.mainRoll)
+
+    lootItem match {
+      case s: Some[Item] => itemPickUp
+      case _ => println("The " + monster.name + " dropped " + lootGold + " gold." )
+    }
+
+    player.addGold(lootGold)
+
+    def itemPickUp: Unit = {
+
+        println("The " + monster.name + " dropped " + lootGold + " gold and \n<" +
+
+        lootItem.get.name + ">\n Pick it up?\n" +
+        "\t[1] Yes\n" +
+        "\t[2] No")
+        val userInput = scala.io.StdIn.readLine()
+        userInput match {
+          case "1" => {
+            player.addItem(lootItem.get)
+            println("You picked up " + lootItem.get.name)
+          }
+          case "2" => println("You discarded the " + lootItem.get.name)
+          case _ => println("Not an option")
+        }
+      }
+    }
 
   def displayStatus: Unit = {
-    println("-PLAYER- HP: " + (player.currentHP) + "\t-" + monster.name.toUpperCase + "- HP: " + (monster.currentHP))
+    println("-------------------------------------------------")
+    println("-PLAYER- HP: \t" + (player.currentHP) + "\tMANA: \t" + player.currentMana
+        + "\n" + monster.name.toUpperCase + "- HP: \t" + (monster.currentHP))
+    println("-------------------------------------------------")
   }
 }

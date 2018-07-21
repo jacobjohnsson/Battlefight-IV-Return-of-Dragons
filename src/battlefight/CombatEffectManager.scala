@@ -5,6 +5,7 @@ class CombatEffectManager(stats: Stats, var weapon: Weapon) {
   val attributeEffects = ListBuffer[AttributeEffect]()
   val rawBonusEffects = ListBuffer[RawBonusEffect]()
   val weaponEffects = ListBuffer[WeaponEffect]()
+  val tickingEffects = ListBuffer[TickingEffect]()
   val stat = stats
   
   def changeWeapon(w: Weapon): Unit = {
@@ -16,51 +17,78 @@ class CombatEffectManager(stats: Stats, var weapon: Weapon) {
     stat.reCalculateAttr
     rawBonusEffects.foreach(e => e.activate(stats, weapon))
   }
-
-  def addAttrEffect(effect: AttributeEffect): Unit = {
-    attributeEffects += effect
-    effect.activate(stats, weapon)
-    reCalculate
+  
+  def addEffect(effect: CombatEffect): Unit = {
+    effect match {
+      case a: AttributeEffect => {
+        attributeEffects += a
+        a.activate(stats, weapon)
+        reCalculate
+      }
+      case r: RawBonusEffect => {
+        r.activate(stats, weapon)
+        rawBonusEffects += r
+        reCalculate
+      }
+      case w: WeaponEffect => weaponEffects += w; w.activate(stats, weapon)
+      case t: TickingEffect => tickingEffects += t;
+      }
   }
   
-  def removeAttrEffect(effect: AttributeEffect): Unit = {
-    if (attributeEffects.contains(effect)) {
-      effect.deActivate(stats, weapon)
-      attributeEffects -= effect
-      reCalculate
+  def removeEffect(effect: CombatEffect): Unit = {
+    effect match {
+      case a : AttributeEffect => {
+        if (attributeEffects.contains(a)) {
+          a.deActivate(stats, weapon)
+          attributeEffects -= a
+          reCalculate
+        }
+      }
+      case r: RawBonusEffect => {
+        if (rawBonusEffects.contains(r)) {
+          r.deActivate(stats, weapon)
+          rawBonusEffects -= r
+        }
+      }
+      case w: WeaponEffect => {
+        if (weaponEffects.contains(w)) {
+          w.deActivate(stats, weapon)
+          weaponEffects -= w
+        }
+      }
     }
   }
   
-  def addRawEffect(effect: RawBonusEffect): Unit = {
-    rawBonusEffects += effect
-    effect.activate(stats, weapon)    
-  }
-
-  def removeRawEffect(effect: RawBonusEffect): Unit = {
-    if (rawBonusEffects.contains(effect)) {
-      effect.deActivate(stats, weapon)
-      rawBonusEffects -= effect
-    }
-  }
-  
-  def addWeaponEffect(effect: WeaponEffect): Unit = {
-    weaponEffects += effect
-    effect.activate(stats, weapon)
-  }
-  
-  def removeWeaponEffect(effect: WeaponEffect): Unit = {
-    if (weaponEffects.contains(effect)) {
-      effect.deActivate(stats, weapon)
-      weaponEffects -= effect
-    }
-  }
+//  def removeAttrEffect(effect: AttributeEffect): Unit = {
+//    if (attributeEffects.contains(effect)) {
+//      effect.deActivate(stats, weapon)
+//      attributeEffects -= effect
+//      reCalculate
+//    }
+//  }
+//
+//  def removeRawEffect(effect: RawBonusEffect): Unit = {
+//    if (rawBonusEffects.contains(effect)) {
+//      effect.deActivate(stats, weapon)
+//      rawBonusEffects -= effect
+//    }
+//  }
+//  
+//  def removeWeaponEffect(effect: WeaponEffect): Unit = {
+//    if (weaponEffects.contains(effect)) {
+//      effect.deActivate(stats, weapon)
+//      weaponEffects -= effect
+//    }
+//  }
   
   def toList: List[CombatEffect] = {
-    (attributeEffects ++ rawBonusEffects ++ weaponEffects).toList
+    (attributeEffects ++ rawBonusEffects ++ weaponEffects ++ tickingEffects).toList
   }
   
-  def proc: Unit = {    
-    attributeEffects.foreach(e => if (e.tick(stats)) removeAttrEffect(e))    
-    rawBonusEffects.foreach(e => if (e.tick(stats)) removeRawEffect(e))
+  def proc(wRoll: Int): Unit = {
+    tickingEffects.foreach(t => t.tickTime(stats))
+    
+    attributeEffects.foreach(e => if (e.tickTime(stats)) removeEffect(e))    
+    rawBonusEffects.foreach(e => if (e.tickTime(stats)) removeEffect(e))
   }
 }

@@ -21,16 +21,17 @@ class TickingEffect(name: String,
     }
   }
 
-  def extendEffect(effect: CombatEffect): Unit = {
+  def extendEffect(effect: CombatEffect): CombatEffect = {
     additionalEffect match {
       case e: Some[CombatEffect] => e.get.extendEffect(effect)
       case _ => additionalEffect = Some(effect)
     }
+    this
   }
 
-  def tick(stats: Stats): Boolean = {
+  def tickTime(stats: Stats): Boolean = {
     additionalEffect match {
-      case e: Some[CombatEffect] => e.get.tick(stats)
+      case e: Some[CombatEffect] => e.get.tickTime(stats)
       case _ =>
     }
     stats.addRawBonus(attr, bonus)
