@@ -19,7 +19,7 @@ _____________________________________________________
 You've encountered a Cutthroat. Fight!
 
 -------------------------------------------------
--PLAYER- HP: 	7	MANA: 	2
+PLAYER- HP: 	7	MANA: 	2
 CUTTHROAT- HP: 	9
 -------------------------------------------------
 Your options are: 
