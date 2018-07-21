@@ -1,0 +1,11 @@
+Name, 		Circle, Damage, 	Effects
+Frost Burn,	1,	d6minus2,	none
+Fireball, 	1, 	d6, 		none
+Cold Hands, 	1, 	d6, 		none
+Healing Hand,	1,	d6,		Heal
+Poison Sting, 	2, 	d6by2, 		Lethal poison
+Ice Bolt, 	2, 	d6by2, 		Cold
+Healing Touch,	2,	2d6,		Heal
+Acid Arrow,	2,	d6,		Mild poison
+Vampiric Touch,	2,	d6,		Mild poison
+Immolation,	3,	3d6,		none

@@ -1,7 +1,7 @@
 package battlefight
 
-class Armor(val name: String, val defense: Int, val ap: Int, val c: Int) extends Item(name, c){
-  def description: String = name + ", \t" + defense + ", \t" + ap + ", \t" + cost
+class Armor(val n: String, val defense: Int, val ap: Int, val c: Int) extends Item(n, c){
+  def description: String = name + ", \t" + defense + ", \t" + ap + ", \t" + cost + "g"
   override def toString: String = name
 }
 

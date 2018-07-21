@@ -1,34 +1,38 @@
 package battlefight
 
 class MainLocation(player: Hero) extends Location(player) {
-  var x: Int = 0
   val shop = new Shop(player)
-  
+  lazy val murdersMark = new murdersmark.Start(player)
+
   def run: Unit = {
     menu
   }
-  
+
   def description: String = {
     "Welcome to the world of Roshar! Here lies many dangers but even more treasure." +
-          " Be wary though, for fortune only favors the brave, cunning and strong. What do you want to do?\n"
+    "Be wary though, for fortune only favors the brave, cunning and strong.\n" +
+    "You're currently at home, pondering deep things, when you realize life's too short for too much pondering\n" +
+    "Thses are the rumors you're currently aware of: \n\n"
   }
 
   def menu: Unit = {
     var exit: Boolean = false;
     while(exit == false) {
       println(description +
-        "[1] Head to the wilderness\n" +
-        "[2] Visit a shop\n" +
-        "[3] View Hero\n" +
-        "[4] Retire")
+        "[1] Visit the newly arrived Circus\n" + 
+        "[2] Realm of the Fellnight Queen\n" +
+        "[3] Visit a shop\n" +
+        "[4] View Hero\n" +
+        "[5] Retire")
 
       val userInput = scala.io.StdIn.readLine()
 
       userInput match {
-        case "1" => wilderness
-        case "2" => toShop
-        case "3" => Character.view(player)
-        case "4" => exit = true
+        case "1" => murdersMark.main(player)
+        case "2" => wilderness; println("Wilderness")
+        case "3" => toShop
+        case "4" => Character.view(player)
+        case "5" => exit = true
         case _ => println("Please choose one of the options!")
       }
     }
@@ -75,7 +79,7 @@ class MainLocation(player: Hero) extends Location(player) {
     }
 
   def toShop: Unit = {
-    
-    shop.run    
+
+    shop.run
   }
 }

@@ -1,0 +1,10 @@
+{
+	"name": "Goblin Grunt",
+	"W": 4,
+	"R": 6,
+	"M": 1,
+	"XP": 80,
+	"Weapon": "Dragon Rifle",
+	"Armor": "Lamellar Armor",
+	"Spells": ["FireBall", "ColdHands"]
+}

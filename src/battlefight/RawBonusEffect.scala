@@ -22,21 +22,22 @@ class RawBonusEffect(name: String,
     }
   }
 
-  def extendEffect(effect: CombatEffect): Unit = {
+  def extendEffect(effect: CombatEffect): CombatEffect = {
     additionalEffect match {
       case re: Some[CombatEffect] => re.get.extendEffect(effect)
       case _ => additionalEffect = Some(effect)
     }
+    this
   }
 
-  def tick(stats: Stats): Boolean = {
+  def tickTime(stats: Stats): Boolean = {
     additionalEffect match {
-      case re: Some[CombatEffect] => re.get.tick(stats)
+      case re: Some[CombatEffect] => re.get.tickTime(stats)
       case _ =>
     }
 
     timer -= 1
-    if (timer > 0) true
+    if (timer == 0) true
     else false
 
   }

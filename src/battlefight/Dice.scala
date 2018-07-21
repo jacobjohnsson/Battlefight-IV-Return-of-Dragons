@@ -20,4 +20,8 @@ object Dice {
   val d6plus2 = () => Dice.explodingRoll(6) + 2
   val d6plus4 = () => Dice.explodingRoll(6) + 4
   val d62 = () => Dice.explodingRoll(6) + Dice.explodingRoll(6)
+  val d63 = () => Dice.explodingRoll(6) +
+                   Dice.explodingRoll(6) +
+                   Dice.explodingRoll(6)
+  val d0 = () => 0
 }

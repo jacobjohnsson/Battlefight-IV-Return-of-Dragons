@@ -1,5 +1,5 @@
 package battlefight
 
 trait ITicking {
-  def tick(stats: Stats): Boolean
+  def tickTime(stats: Stats): Boolean
 }

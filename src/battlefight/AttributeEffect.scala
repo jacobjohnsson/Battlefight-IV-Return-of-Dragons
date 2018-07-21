@@ -23,17 +23,18 @@ class AttributeEffect(name: String,
     }
   }
 
-  def extendEffect(effect: CombatEffect): Unit = {
+  def extendEffect(effect: CombatEffect): CombatEffect = {
     additionalEffect match {
       case ae: Some[CombatEffect] => ae.get.extendEffect(effect)
       case _ => additionalEffect = Some(effect)
     }
+    this
   }
 
-  def tick(stats: Stats): Boolean = {
+  def tickTime(stats: Stats): Boolean = {
     
     additionalEffect match {
-      case ae: Some[CombatEffect] => ae.get.tick(stats)
+      case ae: Some[CombatEffect] => ae.get.tickTime(stats)
       case _ => 
     }
     

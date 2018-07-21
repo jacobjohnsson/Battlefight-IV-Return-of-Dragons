@@ -1,6 +1,6 @@
 Armor, Defense, AP, Cost
-None      , 0, 0, 0
-Clothes   , 0, 0, 3
+None, 0, 0, 0
+Clothes, 0, 0, 3
 Padded cloth, 1, 0, 8
 Leather armor, 2, 1, 15
 Scale armor, 3, 2, 23

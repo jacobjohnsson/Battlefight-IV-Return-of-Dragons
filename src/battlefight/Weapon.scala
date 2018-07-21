@@ -1,19 +1,34 @@
 package battlefight
 
-class Weapon(val name: String,
+class Weapon(val n: String,
             val skill: String,
             inputdamage: () => Int,
             cost: Int,
-            var bonus: Int) extends Item(name, cost){
+            var bonus: Int) extends Item(n, cost){
 
   def damage = inputdamage
 
   override def toString: String = {
-    name + ", " + skill + ", damage: " + damage + ", cost: " + cost + ".\n"
+    name
   }
 
-  def description: String = {
-    "This is a " + name + ", all craftdwarfship is of the highest quality"
+  def description: String = {    
+    skill + ",\t" + getDamageString + ",\tcost:" + cost + ""
+  }
+  
+  def getDamageString: String = {
+    var damageString = "damage"
+    
+    damage match {
+      case d: (() => Int) if (d == Dice.d6) => damageString = "d6"
+      case d: (() => Int) if (d == Dice.d6plus2) => damageString = "d6+2"
+      case d: (() => Int) if (d == Dice.d6plus4) => damageString = "d6+4"
+      case d: (() => Int) if (d == Dice.d62) => damageString = "d6 + d6"
+      case d: (() => Int) if (d == Dice.d6by2) => damageString = "d6/2"
+      case d: (() => Int) if (d == Dice.d6minus2) => damageString = "d6-2"
+      case _ => damageString = "damage not found"
+    }
+    damageString
   }
 
   def addBonus(mod: Int): Unit = {
@@ -73,4 +88,5 @@ object Weapon {
   def createUnarmed: Weapon = {
     new Weapon("Unarmed", "Unarmed", Dice.d6by2, 0, 0)
   }
+  def Plus2Staff: Weapon = new Weapon("Staff (+2)", "Blunt", Dice.d6, 25, 2)
 }

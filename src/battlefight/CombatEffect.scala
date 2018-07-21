@@ -4,7 +4,7 @@ abstract class CombatEffect(val name: String){
   var additionalEffect: Option[CombatEffect] = None
   def activate(stats: Stats, weapon: Weapon): Unit
   def deActivate(stats: Stats, weapon: Weapon): Unit
-  def extendEffect(effect: CombatEffect): Unit
+  def extendEffect(effect: CombatEffect): CombatEffect
 
   def canEqual(that: Any): Boolean = that.isInstanceOf[CombatEffect]
   override def equals(that: Any): Boolean = {
@@ -13,12 +13,21 @@ abstract class CombatEffect(val name: String){
       case _ => false
     }
   }
-  
+
   // returns TRUE when it is done!
-  def tick(stats: Stats): Boolean
+  def tickTime(stats: Stats): Boolean
+}
+
+object CombatEffect {
+  val list: List[CombatEffect] = List(
+      new TickingEffect("Mild poison", "hp", -1, 4),
+      new RawBonusEffect("Lethal poison", "hp", -2, 6)
+          .extendEffect(new TickingEffect("Lethal poison", "hp", -2, 6))
+          .extendEffect(new RawBonusEffect("Lethal poison", "mana", -1, 6)),
+      new AttributeEffect("Cold", "w", -2, -1))
 }
 
 // Exempel på hur man kombinerar effekter!
 //    val effect = new AttributeEffect("W Buff with health removal", "w", 4, 4)
 //    effect.extendEffect(new TickingEffect("HealthRemover", "hp", -3, 4))
-// hero.addEffect(effect)
+//    hero.addEffect(effect)
