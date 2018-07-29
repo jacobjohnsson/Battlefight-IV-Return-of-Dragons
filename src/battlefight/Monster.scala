@@ -15,13 +15,13 @@ case class Monster (n: String, s: Stats, xpValue: Int) extends Character(n, s) {
     }
   }
   override def addSpell[C](spell: Spell): Monster = {
-    spellBook += spell
+    spells += spell
     this
   }
   
   def act: String = {
     if (currentHP == 1) "flee"
-    else if (!spellBook.isEmpty) "spell"
+    else if (!spells.isEmpty) "spell"
     else "attack"
   }
 }
@@ -72,7 +72,7 @@ object Monster {
           randomMonster.xpValue,
           randomMonster.weapon,
           randomMonster.armor.getOrElse(Armor.list(0)))
-    randomMonster.spellBook.foreach(monster.addSpell(_))
+    randomMonster.spells.foreach(monster.addSpell(_))
     monster
   }
 

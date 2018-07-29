@@ -85,7 +85,6 @@ class Hero private(n: String, s: Stats, race: String) extends Character(n, s) {
     skills.foreach(s => sb.append(s.name + ", "))
     sb.toString
   }
-
 }
 
 object Hero {
@@ -98,13 +97,7 @@ object Hero {
         }
         case "Elf" => {
           hero.addEffect(new AttributeEffect("Exceptional Attribute Mage", "m", 2, 0))
-          hero.addEffect(new RawBonusEffect("Weak", "hp", -2, 0))
-
-
-          hero.addSpell(Spell.list(3)).addSpell(Spell.list(6))
-              .addSpell(Spell.list(7)).addSpell(Spell.list(9))
-              .addSpell(Spell.list(5)).addSpell(Spell.list(4))
-          hero
+          hero.addEffect(new RawBonusEffect("Weak", "hp", -2, 0))          
         }
         case "Halfling" => {
           hero.addEffect(new AttributeEffect("Exceptional Attribute Rogue", "r", 2, 0))
@@ -124,6 +117,7 @@ object Hero {
         }
         case _ => println("Please choose one of the options")
     }
+    hero.reset
     hero
   }
 
@@ -153,18 +147,23 @@ object Hero {
     }
   }
 
-  def spellMenu( hero: Hero): Unit = {
-    scala.io.StdIn.readLine("\t [1] Cast a spell\t [2] Return") match {
-      case "1" => {
-        println("Choose a spell to cast on yourself.");
-        val spell = chooseSpell
-        hero.castSpell(spell, hero)
+  def printSpellMenu(hero: Hero): Unit = {
+    if (!hero.spells.isEmpty) {
+      println("\t [1] Cast a spell\t [2] Return")    
+    
+      scala.io.StdIn.readLine() match {
+        case "1" => {
+          println("Choose a spell to cast.");
+          val spell = chooseSpell
+          hero.castSpell(spell, hero)
+        }
+        case _ =>
       }
-      case _ =>
     }
+    
     def chooseSpell: Spell = {
       val index = scala.io.StdIn.readInt()
-      hero.spellBook(index - 1)
+      hero.spells(index - 1)
     }
   }
 }

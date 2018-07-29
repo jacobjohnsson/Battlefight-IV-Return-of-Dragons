@@ -3,23 +3,25 @@ package battlefight
 class MainLocation(player: Hero) extends Location(player) {
   val shop = new Shop(player)
   lazy val murdersMark = new murdersmark.Start(player)
+  val sf = new StringFormatter
 
   def run: Unit = {
     menu
   }
 
   def description: String = {
-    "Welcome to the world of Roshar! Here lies many dangers but even more treasure." +
-    "Be wary though, for fortune only favors the brave, cunning and strong.\n" +
-    "You're currently at home, pondering deep things, when you realize life's too short for too much pondering\n" +
-    "Thses are the rumors you're currently aware of: \n\n"
+    "Welcome to the world of Roshar! Here lies many dangers but even more treasure. " +
+    "Be wary though, for fortune only favors the brave, cunning and strong. " +
+    "You're currently at home, pondering deep things, when you realize life's too short for too much pondering. " +
+    "These are the rumors you're currently aware of: \n"
   }
 
   def menu: Unit = {
     var exit: Boolean = false;
     while(exit == false) {
-      println(description +
-        "[1] Visit the newly arrived Circus\n" + 
+      
+      println(sf.toString(description) + 
+        "[1] Visit the newly arrived Circus\n" +
         "[2] Realm of the Fellnight Queen\n" +
         "[3] Visit a shop\n" +
         "[4] View Hero\n" +

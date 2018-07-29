@@ -7,7 +7,7 @@ abstract class Character(val name: String, val stats: Stats) {
   var armor: Option[Armor] = None
   final val combatEffects: CombatEffectManager = new CombatEffectManager(stats, weapon)
   val skills: ListBuffer[Skill] = ListBuffer()
-  val spellBook: ListBuffer[Spell] = ListBuffer()
+  var spells: ListBuffer[Spell] = ListBuffer()
 
   def attackValue: Int = weapon.damage() + weapon.bonus
   def currentHP: Int = stats.currentHP
@@ -15,17 +15,12 @@ abstract class Character(val name: String, val stats: Stats) {
   def mainAttr: Int = stats.mainAttr
   def isDead: Boolean = stats.currentHP <= 0
 
-
   protected def armorDefense: Int = armor match {
     case Some(a) => a.defense
     case none => 0
   }
+
   def defense: Int = stats.defense + armorDefense
-
-
-  override def toString: String = {
-    "Character: " + name
-  }
 
   def hitWithWeapon(hit: Int, damage: Int): Unit
 
@@ -43,7 +38,7 @@ abstract class Character(val name: String, val stats: Stats) {
   def castSpell(spell: Spell, target: Character): Boolean = {
     var result: Boolean = false
 
-    if (spellBook.contains(spell) && stats.currentMana >= spell.manaCost) {
+    if (spells.contains(spell) && stats.currentMana >= spell.manaCost) {
       stats.currentMana -= spell.manaCost
       if (mRoll > spell.dl)  {
         target.hitWithSpell(spell)
@@ -53,9 +48,8 @@ abstract class Character(val name: String, val stats: Stats) {
     result
   }
 
-
   def addSpell[C](spell: Spell): Character = {
-    spellBook += spell
+    spells += spell
     this
   }
 
@@ -73,7 +67,7 @@ abstract class Character(val name: String, val stats: Stats) {
 
   def addSkill(skill: Skill): Unit = {
     skills += skill
-    addEffect(skill.effect)      
+    addEffect(skill.effect)
     println(skill.name + " was just added!")
   }
 
@@ -90,10 +84,16 @@ abstract class Character(val name: String, val stats: Stats) {
     }
   }
 
-
   def proc: Unit = combatEffects.proc(wRoll)
 
-  def addItem(item: Item): Unit = inventory += item
+  def addItem(item: Item): Unit = {
+    inventory += item
+
+    item match {
+      case sb: SpellBook => spells = (spells ++= sb.spells).distinct
+      case _ =>
+    }
+  }
 
   def equip(item: Item): Unit = {
     item match {
@@ -124,13 +124,16 @@ abstract class Character(val name: String, val stats: Stats) {
     sb.toString
   }
 
-  def viewSkillsHook: String = ""
+  protected def viewSkillsHook: String = ""
 
+  override def toString: String = {
+    "Character: " + name
+  }
 
-  def mainRoll: Int = {stats.mainAttr + Dice.explodingRoll(6)}
-  def wRoll: Int = {stats.w.value + Dice.explodingRoll(6)}
-  def rRoll: Int = {stats.r.value + Dice.explodingRoll(6)}
-  def mRoll: Int = {stats.m.value + Dice.explodingRoll(6)}
+  def mainRoll: Int = stats.mainAttr + Dice.explodingRoll(6)
+  def wRoll: Int = stats.w.value + Dice.explodingRoll(6)
+  def rRoll: Int = stats.r.value + Dice.explodingRoll(6)
+  def mRoll: Int = stats.m.value + Dice.explodingRoll(6)
 }
 
 object Character {
@@ -146,22 +149,9 @@ object Character {
     val userInput = scala.io.StdIn.readLine()
 
     userInput match {
-      case "1" => {
-        printInventory(character)
-        character match {
-          case h: Hero => Hero.inventoryMenu(h)
-          case m: Monster =>
-        }
-      }
+      case "1" => printInventory(character)
       case "2" =>
-      case "3" => {
-        println("\tSpell book: ")
-        printSpells(character)
-        character match {
-          case h:  Hero => Hero.spellMenu(h)
-          case _ =>
-        }
-      }
+      case "3" => printSpells(character)
       case _ => println("Not an Option!\n")
     }
   }
@@ -169,10 +159,19 @@ object Character {
   def printInventory(character: Character): Unit = {
     println("Inventory of " + character.name + ": ")
     character.inventory.indices.foreach(i => println("[" + (i+1) + "] " + character.inventory(i)))
+    character match {
+      case h: Hero => Hero.inventoryMenu(h)
+      case m: Monster =>
+    }
   }
 
   def printSpells(character: Character): Unit = {
-
-    character.spellBook.indices.foreach(i => println("[" + (i+1) + "] " + character.spellBook(i)))
+    println("\tSpell book: ")
+    character.spells.indices.foreach(i => println("[" + (i+1) + "] " + character.spells(i)))
+    if (character.spells.isEmpty) println("\tYou have no spells"); scala.io.StdIn.readLine()
+    character match {
+      case h:  Hero => Hero.printSpellMenu(h)
+      case _ =>
+    }
   }
 }

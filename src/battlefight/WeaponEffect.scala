@@ -18,13 +18,13 @@ class WeaponEffect(name: String, bonus: Int) extends CombatEffect(name){
     }
   }
 
-def extendEffect(effect: CombatEffect): CombatEffect = {
-  additionalEffect match {
-    case we: Some[CombatEffect] => we.get.extendEffect(effect)
-    case _ => additionalEffect = Some(effect)
+  def extendEffect(effect: CombatEffect): CombatEffect = {
+    additionalEffect match {
+      case we: Some[CombatEffect] => we.get.extendEffect(effect)
+      case _ => additionalEffect = Some(effect)
+    }
+    this
   }
-  this
-}
 
   def tickTime(stats: Stats): Boolean = {
     additionalEffect match {

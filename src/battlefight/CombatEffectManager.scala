@@ -59,35 +59,12 @@ class CombatEffectManager(stats: Stats, var weapon: Weapon) {
     }
   }
   
-//  def removeAttrEffect(effect: AttributeEffect): Unit = {
-//    if (attributeEffects.contains(effect)) {
-//      effect.deActivate(stats, weapon)
-//      attributeEffects -= effect
-//      reCalculate
-//    }
-//  }
-//
-//  def removeRawEffect(effect: RawBonusEffect): Unit = {
-//    if (rawBonusEffects.contains(effect)) {
-//      effect.deActivate(stats, weapon)
-//      rawBonusEffects -= effect
-//    }
-//  }
-//  
-//  def removeWeaponEffect(effect: WeaponEffect): Unit = {
-//    if (weaponEffects.contains(effect)) {
-//      effect.deActivate(stats, weapon)
-//      weaponEffects -= effect
-//    }
-//  }
-  
   def toList: List[CombatEffect] = {
     (attributeEffects ++ rawBonusEffects ++ weaponEffects ++ tickingEffects).toList
   }
   
   def proc(wRoll: Int): Unit = {
-    tickingEffects.foreach(t => t.tickTime(stats))
-    
+    tickingEffects.foreach(t => if (t.tickTime(stats)) removeEffect(t))    
     attributeEffects.foreach(e => if (e.tickTime(stats)) removeEffect(e))    
     rawBonusEffects.foreach(e => if (e.tickTime(stats)) removeEffect(e))
   }

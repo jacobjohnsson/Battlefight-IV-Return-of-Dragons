@@ -36,7 +36,6 @@ class RawDiceEffect(name: String,
       case _ =>
     }
 
-    
     timer -= 1
     if (timer > 0) true
     else false

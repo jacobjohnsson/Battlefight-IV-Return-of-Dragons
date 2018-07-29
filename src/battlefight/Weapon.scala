@@ -8,13 +8,8 @@ class Weapon(val n: String,
 
   def damage = inputdamage
 
-  override def toString: String = {
-    name
-  }
-
-  def description: String = {    
-    skill + ",\t" + getDamageString + ",\tcost:" + cost + ""
-  }
+  val description: String = skill + ",\t" + getDamageString + ",\tcost:" + cost + ""
+  
   
   def getDamageString: String = {
     var damageString = "damage"
@@ -33,6 +28,10 @@ class Weapon(val n: String,
 
   def addBonus(mod: Int): Unit = {
     bonus += mod
+  }
+  
+  override def toString: String = {
+    name
   }
 }
 

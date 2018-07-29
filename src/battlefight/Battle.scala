@@ -11,20 +11,19 @@ class Battle(player: Hero, monster: Monster) {
     round
 
     def round: Unit = {
-      monster.proc
-      player.proc
+      procAll
       
       playerAct
       
       if (monster.isDead) {
         fighting = false
         won
-      }
-      
-      monster.act match {
-        case "flee" => println(monster.name + " fled!"); fighting = false
-        case "attack" => monsterAttack
-        case "spell" => monster.castSpell(monster.spellBook(0), player)
+      } else {
+        monster.act match {
+          case "flee" => println(monster.name + " fled!"); fighting = false
+          case "attack" => monsterAttack
+          case "spell" => monster.castSpell(monster.spells(0), player)
+        }
       }
 
       if (fighting) round
@@ -53,6 +52,8 @@ class Battle(player: Hero, monster: Monster) {
       }
     }
   }
+  
+  def procAll: Unit = monster.proc; player.proc
 
   def playerAttack: Unit = {
     val hit = player.mainRoll
@@ -70,37 +71,39 @@ class Battle(player: Hero, monster: Monster) {
         println("Choose: ")
         val userInput = scala.io.StdIn.readLine()
         Try(index = userInput.toInt) match { 
-          case Failure(f) => println(f); choose
+          case Failure(f) => println(f + "\nTry again!"); choose
           case _ => 
         }
       }
       
       choose
-      player.spellBook(index)
+      player.spells(index)
     }
 
     var result: Boolean = false
+    
+    if (!player.spells.isEmpty) {
 
-    println("\t    Name\t\tMana")
-    player.spellBook.indices.foreach(i => println(
-          "\t[" + i + "] " + player.spellBook(i).name +
-          " \t\t" + player.spellBook(i).manaCost))
-
-    val spell: Spell = chooseSpell
-    val target: Character = if (spell.beneficial) player else monster
-
-    if (player.currentMana >= spell.manaCost) {
-      if (player.castSpell(spell, target)){
-        println("You casted a " + spell.name)
-        result = true
-      }
-      else {
-        println("You failed to cast a " + spell.name)
-        result = true
-      }
-    } else
-      println("You dont have enough mana to cast that spell.")
-
+      Character.printSpells(player)
+      println("Choose a spell: ")
+      
+      val spell: Spell = chooseSpell
+      val target: Character = if (spell.beneficial) player else monster
+  
+      if (player.currentMana >= spell.manaCost) {
+        if (player.castSpell(spell, target)){
+          println("You casted a " + spell.name)
+          result = true
+        }
+        else {
+          println("You failed to cast a " + spell.name)
+          result = true
+        }
+      } else
+        println("You dont have enough mana to cast that spell.")
+    } else {
+      println("You don't have any spells!")
+    }
     result
   }
 

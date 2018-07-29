@@ -2,12 +2,14 @@ package battlefight
 
 abstract class CombatEffect(val name: String){
   var additionalEffect: Option[CombatEffect] = None
+  var dl: Int = Integer.MAX_VALUE
   def activate(stats: Stats, weapon: Weapon): Unit
   def deActivate(stats: Stats, weapon: Weapon): Unit
   def extendEffect(effect: CombatEffect): CombatEffect
 
-  def canEqual(that: Any): Boolean = that.isInstanceOf[CombatEffect]
+
   override def equals(that: Any): Boolean = {
+    def canEqual(that: Any): Boolean = that.isInstanceOf[CombatEffect]
     that match {
       case ce: CombatEffect => canEqual(that) && this.name == ce.name
       case _ => false
@@ -24,7 +26,7 @@ object CombatEffect {
       new RawBonusEffect("Lethal poison", "hp", -2, 6)
           .extendEffect(new TickingEffect("Lethal poison", "hp", -2, 6))
           .extendEffect(new RawBonusEffect("Lethal poison", "mana", -1, 6)),
-      new AttributeEffect("Cold", "w", -2, -1))
+      new AttributeEffect("Cold", "w", -2, 10))
 }
 
 // Exempel på hur man kombinerar effekter!

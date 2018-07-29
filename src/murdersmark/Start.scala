@@ -1,4 +1,5 @@
 package murdersmark
+import battlefight.{Hero, SpellBook, Spell}
 
 class Start(hero: battlefight.Hero) {
   val sf = new battlefight.StringFormatter
@@ -20,10 +21,10 @@ class Start(hero: battlefight.Hero) {
     def exploreCircus: Unit = {
   
       scala.io.StdIn.readLine(sf.toString(circusDescription) + "\n\t" +
-          "[1] South to games\t [2] East to zoo\t [3] North to stage\n") match {
+          "[1] South to games\t [2] East to zoo\t [3] Add spellbook\n") match {
         case "1" => CircusGames.run(player)
-        case "2" => exploreCircus
-        case _ => println("hm..")
+        case "2" => exploreCircus 
+        case _ =>
       }
     }
   }
