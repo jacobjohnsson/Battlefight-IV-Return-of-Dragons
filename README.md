@@ -45,4 +45,4 @@ Combat effects:
     - concrete AttributeEffect
     - concrete RawBonusEffect
     - concrete TickingEffect
-  These can be combined in anyway at runtima, yet treated as a single object, neat.
+These can be combined in anyway at runtime, yet treated as a single object, neat.
